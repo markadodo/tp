@@ -3,7 +3,7 @@ layout: page
 title: User Guide
 ---
 
-AddressBook Level 3 (AB3) is a **desktop application for managing contacts, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, AB3 can help you manage contacts faster than traditional GUI applications.
+ShutterLink is a **desktop application for managing client contacts and photography engagements, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). It keeps each client's contact details together with the type and date of their event.
 
 * Table of Contents
 {:toc}
@@ -15,20 +15,19 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 1. Ensure that Java `25` or later is installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/se-edu/addressbook-level3/releases).
+1. Download the latest `.jar` file from the [ShutterLink releases page](https://github.com/AY2627S1-CS2103T-T08-3/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+1. Copy the file to the folder you want to use as the _home folder_ for ShutterLink.
 
 1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
-   A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
-   ![Ui](images/Ui.png)
+   The ShutterLink GUI should appear in a few seconds with some sample engagement data.
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add n/John Doe p/98765432 e/johnd@example.com t/Wedding d/2026-12-20` : Adds a client engagement for `John Doe`.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -50,42 +49,44 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
   For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
-  For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
-
-* Items followed by `…`​ can appear zero or more times.<br>
-  For example, `[t/TAG]…​` may be omitted, or written as `t/friend` or `t/friend t/family`.
+  For example, `edit INDEX [p/PHONE]` can be used as `edit 1 p/91234567` or with another supported field instead.
 
 * Parameters can be in any order.<br>
-  For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+  For example, if the command specifies `n/NAME p/PHONE`, `p/PHONE n/NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
-  For example, `help 123` is interpreted as `help`.
+* Command words are case-sensitive, except for `list`. For example, use `add`, not `ADD`. The `list` command, its `sort/` prefix, and the `date` value are case-insensitive.
+
+* `help` does not accept extra arguments. Extra arguments supplied to `clear` and `exit` are ignored.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
 ### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
-
-![help message](images/helpMessage.png)
+Opens a window showing a summary of the available commands.
 
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a client engagement: `add`
 
-Adds a person to the address book.
+Adds a client engagement to ShutterLink.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
+Format: `add n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE`
 
-<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
-</div>
+All five fields are required. Parameters can be supplied in any order, but each prefix can appear only once.
+
+The fields must meet these requirements:
+
+* `NAME` contains only alphanumeric characters and spaces and is not blank.
+* `PHONE` contains only digits and is at least three digits long.
+* `EMAIL` is a valid email address such as `alex@example.com`.
+* `EVENT_TYPE` is not blank and may contain spaces.
+* `EVENT_DATE` is a valid calendar date in `YYYY-MM-DD` format, such as `2026-12-20`.
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+* `add n/John Doe p/98765432 e/johnd@example.com t/Wedding d/2026-12-20`
+* `add d/2027-01-08 t/Birthday e/betsycrowe@example.com p/1234567 n/Betsy Crowe`
 
 ### Listing and sorting contacts: `list`
 
@@ -111,7 +112,7 @@ Displayed indexes are recalculated; subsequent edit/delete commands use the inde
 Sorting does not change the saved records or their insertion order. Restarting restores insertion order.
 
 Only the `sort/` prefix and the value `date` are supported. Spaces and tabs may separate arguments,
-but the command must occupy one line. Stage filtering is not available in v1.2.
+but the command must occupy one line. Stage filtering is not supported.
 
 | Invalid input | Feedback |
 | --- | --- |
@@ -123,38 +124,45 @@ but the command must occupy one line. Stage filtering is not available in v1.2.
 
 Unsupported prefixes are rejected. Invalid list commands leave both the data and current view unchanged.
 
-### Editing a person: `edit`
+### Editing a client engagement: `edit`
 
-Edits an existing person in the address book.
+Edits an existing client engagement.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE]`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
+* The same field validation rules used by `add` apply.
+* Each prefix can appear only once.
+* After a successful edit, all contacts are displayed in insertion order.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+* `edit 1 p/91234567 e/johndoe@example.com` changes the phone number and email address of the first displayed engagement.
+* `edit 2 t/Corporate d/2027-03-15` changes the event type and event date of the second displayed engagement.
 
-### Locating persons by name: `find`
+### Finding client engagements: `find`
 
-Finds persons whose names contain any of the given keywords.
+Finds client engagements whose selected field contains the given search value.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Formats:
+* `find n/NAME`
+* `find p/PHONE`
+* `find e/EMAIL`
+* `find t/EVENT_TYPE`
 
-* The search is case-insensitive; for example, `hans` matches `Hans`.
-* Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* The search considers only names.
-* Only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* Exactly one search prefix must be supplied.
+* The search is case-insensitive.
+* Partial values match. For example, `find n/lex` matches `Alex Yeoh`, and `find t/wed` matches `Wedding`.
+* Spaces are part of a multi-word search value. For example, `find n/Alex Yeoh` searches for the substring `Alex Yeoh`.
+* Event dates cannot be searched using `find`.
+* If there are no matches, ShutterLink reports `No matching contacts found.`
 
 Examples:
-* `find John` returns `john` and `John Doe`
-* `find alex david` returns `Alex Yeoh`, `David Li`<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+* `find n/alex` returns contacts whose names contain `alex`.
+* `find p/9123` returns contacts whose phone numbers contain `9123`.
+* `find e/@example.com` returns contacts whose email addresses contain `@example.com`.
+* `find t/Wedding` returns contacts whose event types contain `Wedding`.
 
 ### Deleting a person: `delete`
 
@@ -168,7 +176,7 @@ Format: `delete INDEX`
 
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `find n/Betsy` followed by `delete 1` deletes the first engagement in the search results.
 
 ### Clearing all entries: `clear`
 
@@ -184,15 +192,15 @@ Format: `exit`
 
 ### Saving the data
 
-AddressBook automatically saves data after every command. You do not need to save manually.
+ShutterLink automatically saves data after every successfully executed command. You do not need to save manually.
 
 ### Editing the data file
 
-AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+ShutterLink data is saved automatically as a JSON file at `[JAR file location]/data/addressbook.json`. Advanced users may update data directly by editing that file.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+If your changes make the data file invalid, ShutterLink starts with an empty data set at the next run. The invalid file remains on disk until you successfully run a command, which causes ShutterLink to save its current data. We recommend backing up the file before editing it.<br>
+Furthermore, certain edits can cause ShutterLink to behave unexpectedly (e.g., if a value is outside its accepted format). Edit the data file only if you are confident that you can update it correctly.
 </div>
 
 ### Archiving data files `[coming in v2.0]`
@@ -204,14 +212,13 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous AddressBook home folder.
+**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous ShutterLink home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## Known issues
 
 1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -219,10 +226,11 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
+**Add** | `add n/NAME p/PHONE e/EMAIL t/EVENT_TYPE d/EVENT_DATE`<br>e.g., `add n/James Ho p/22224444 e/jamesho@example.com t/Wedding d/2026-12-20`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [t/EVENT_TYPE] [d/EVENT_DATE]`<br>e.g., `edit 2 n/James Lee d/2027-01-10`
+**Find** | `find n/NAME`, `find p/PHONE`, `find e/EMAIL`, or `find t/EVENT_TYPE`<br>e.g., `find t/Wedding`
 **List** | `list` or `list sort/date`
 **Help** | `help`
+**Exit** | `exit`
