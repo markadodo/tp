@@ -510,8 +510,10 @@ the same client repeat those three fields.
 
 **MSS**
 
-1.  User requests to find engagements, giving one client name, phone number, email address, or event type.
-2.  ShutterLink shows all engagements whose selected field contains the given value, ignoring capitalization.
+1.  User requests to find engagements, giving one client name, phone number, email address, event type, or engagement stage.
+2.  For name, phone, email, or event type, ShutterLink shows all engagements whose selected field contains the given
+    value, ignoring capitalization. For stage, the value must be a complete supported stage name; ShutterLink shows
+    engagements whose entire stage matches it, ignoring capitalization.
 
     Use case ends.
 
@@ -520,6 +522,12 @@ the same client repeat those three fields.
 * 1a. User gives no search value, or more than one.
 
     * 1a1. ShutterLink shows an error message asking for exactly one search value.
+
+      Use case resumes at step 1.
+
+* 1b. User gives an unsupported or incomplete stage name.
+
+    * 1b1. ShutterLink shows an error message listing the supported stages.
 
       Use case resumes at step 1.
 
@@ -708,13 +716,11 @@ stage, so a repeat client may appear in multiple engagement records.
 5. **Persistence (NFR-05).** After a data-changing command reports success, its changes shall be saved locally
    and restored after a normal shutdown and restart, preserving all supported field values and record order.
    This assumes writable storage with sufficient space and excludes external file modification or disk failure.
-6. **Failure handling (NFR-06).** Invalid input and command-execution errors shall leave records, the current displayed
-   view, and displayed indexes unchanged. A failed save shall be reported as an error. The current implementation
-   does not roll back a model mutation that occurred before that failure, so the in-memory state can differ from the
-   file until another save succeeds or the app restarts. A failure detected before writing, such as insufficient
-   permissions, leaves the existing file unchanged, but saving is not atomic and an interrupted write is not guaranteed
-   to preserve the previous file. A malformed data file starts as an empty address book and is not overwritten by
-   startup itself, although a later successfully executed command that triggers saving can replace it.
+6. **Failure handling (NFR-06).** Parsing and validation errors detected before a model change shall leave records,
+   the current displayed view, and displayed indexes unchanged. A failed save shall be reported as an error; changes
+   already made in memory are not rolled back (see [Persistence after commands](#persistence-after-commands)).
+   A malformed data file starts as an empty address book and is not overwritten by startup itself, although a later
+   successfully executed command that triggers saving can replace it.
 7. **Keyboard usability (NFR-07).** All supported engagement-management and query operations shall be available through
    typed commands without mandatory mouse interaction. After an ordinary successful command, the command field shall
    clear and remain focused; after closing command help, focus shall return to it. On rejection, the field shall retain
@@ -919,8 +925,8 @@ JSON storage, UI cards, sample data and test utilities) had to be updated withou
   AB3's `FilteredList` in a `SortedList` and keeping index-based commands consistent with the displayed order.
 * `upcoming` shows the next seven calendar days using an injectable `Clock`, so date boundaries, time zones and
   midnight roll-over are testable.
-* `find` was redesigned to search one chosen field (name, phone, email or event type) by case-insensitive substring,
-  with phone separators ignored.
+* `find` was redesigned to search one chosen field. Name, phone, email, and event type use case-insensitive substring
+  matching, with phone separators ignored; stage uses case-insensitive exact matching of a supported stage name.
 * The list heading always states the active view and its size, and an engagement's full details open in a keyboard
   accessible dialog.
 
